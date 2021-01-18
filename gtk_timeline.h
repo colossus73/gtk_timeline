@@ -43,7 +43,7 @@ enum
   VIDEO_BACKGROUND,
   AUDIO_BACKGROUND,
   TOTAL_TIME,
-  TIME_MARKER_XPOS
+  TIME_MARKER_POS
 };
 
 #define GTK_TIMELINE_TYPE gtk_timeline_get_type()

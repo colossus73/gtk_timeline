@@ -42,7 +42,7 @@ struct _ImgTimelinePrivate
   gint minutes;
   gint hours;
   gint total_time;
-  gint time_marker_xpos;
+  gint time_marker_pos;
   gboolean button_pressed;
 
   cairo_surface_t *surface;
@@ -81,7 +81,7 @@ static void gtk_timeline_class_init(ImgTimelineClass *klass)
   g_object_class_install_property(gobject_class, VIDEO_BACKGROUND, g_param_spec_string("video_background", "video_background", "video_background", NULL, G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class, AUDIO_BACKGROUND, g_param_spec_string("audio_background", "audio_background", "audio_background", NULL, G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class, TOTAL_TIME,       g_param_spec_int("total_time", "total_time", "total_time", -1, G_MAXINT, 60, G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class, TIME_MARKER_XPOS, g_param_spec_int("time_marker_xpos", "time_marker_xpos", "time_marker_xpos", -1, G_MAXINT, 0, G_PARAM_READWRITE));
+  g_object_class_install_property(gobject_class, TIME_MARKER_POS, g_param_spec_int("time_marker_pos", "time_marker_pos", "time_marker_pos", -1, G_MAXINT, 0, G_PARAM_READWRITE));
 }
 //Needed for g_object_set().
 static void gtk_timeline_set_property(GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
@@ -99,7 +99,7 @@ static void gtk_timeline_set_property(GObject *object, guint prop_id, const GVal
       case TOTAL_TIME:
         gtk_timeline_set_total_time(da, g_value_get_int(value));
       break; 
-      case TIME_MARKER_XPOS:
+      case TIME_MARKER_POS:
         gtk_timeline_set_time_marker(da, g_value_get_int(value));
       break;
 
@@ -154,7 +154,7 @@ void gtk_timeline_set_time_marker(ImgTimeline *da, gint posx)
 {
   ImgTimelinePrivate *priv = gtk_timeline_get_instance_private(da);
 
-  priv->time_marker_xpos = posx;
+  priv->time_marker_pos = posx;
 }
 
 static void gtk_timeline_get_property(GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
@@ -195,7 +195,7 @@ static void gtk_timeline_init(ImgTimeline *da)
   priv->minutes = 0;
   priv->hours = 0;
   priv->total_time = 0;
-  priv->time_marker_xpos = 0;
+  priv->time_marker_pos = 0;
 
   priv->video_background[0]=0.0;
   priv->video_background[1]=0.0;
@@ -244,6 +244,9 @@ static gboolean gtk_timeline_draw(GtkWidget *da, cairo_t *cr)
 
   //This is necessary to draw the slides represented by the GtkButtons
   GTK_WIDGET_CLASS (gtk_timeline_parent_class)->draw (da, cr);
+
+  //Draw the red time marker 
+  gtk_timeline_draw_time_marker(da, cr, 20);
   return TRUE;
 }
 
@@ -382,10 +385,31 @@ void gtk_timeline_add_slide(GtkWidget *da, gchar *filename, gint x)
   gtk_widget_set_size_request(button, 95, -1);
 }
 
-void gtk_timeline_draw_time_marker(GtkWidget *widget, cairo_t *cr, gint pos_X)
+void gtk_timeline_draw_time_marker(GtkWidget *widget, cairo_t *cr, gint posx)
 {
+  cairo_save(cr);
   cairo_set_source_rgb(cr, 1,0,0);
+  cairo_translate(cr, posx,17);
 
+  gint points[3][2] = { 
+                        { 0, 0 }, 
+                        { 5, 15 }, 
+                        { 10, 0 } 
+               
+                      };
+  gint i;
+
+  for (i = 0; i < 3; i++)
+    cairo_line_to(cr, points[i][0], points[i][1]);
+
+  cairo_close_path(cr);
+  cairo_stroke_preserve(cr);
+  cairo_fill(cr);
+
+  cairo_move_to(cr, 5,15);
+  cairo_line_to(cr, 5,137);
+  cairo_stroke(cr);
+  cairo_restore(cr);
 }
 
 void gtk_timeline_drag_data_get(GtkWidget *widget, GdkDragContext *drag_context, GtkSelectionData *data, guint info, guint time,
