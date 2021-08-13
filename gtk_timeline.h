@@ -57,12 +57,18 @@ GtkWidget* gtk_timeline_new();
 void gtk_timeline_set_video_background	(ImgTimeline *da, const gchar *background_string);
 void gtk_timeline_set_audio_background	(ImgTimeline *da, const gchar *background_string);
 void gtk_timeline_adjust_zoom			(GtkWidget *da, gint zoom, gint direction);
+void img_timeline_adjust_marker_posx	(GtkWidget *da, gint posx);
 void gtk_timeline_set_total_time		(ImgTimeline *da, gint total_time);
 void gtk_timeline_add_slide				(GtkWidget *da, gchar *filename, gint posx);
 void gtk_timeline_draw_time_marker(GtkWidget *widget, cairo_t *cr, gint pos_X);
 void gtk_timeline_set_time_marker(ImgTimeline *widget, gint pos_X);
-gboolean gtk_timeline_slide_button_pressed(GtkWidget *widget, GdkEvent *event, ImgTimeline *da);
-gboolean gtk_timeline_slide_button_released(GtkWidget *widget, GdkEvent *event, ImgTimeline *da);
+
+gboolean gtk_timeline_scroll( GtkWidget *widget, GdkEventScroll *event, GtkWidget * );
+void gtk_timeline_drag_data_received (GtkWidget *timeline, GdkDragContext *context, gint x, gint y, GtkSelectionData *data, guint info, guint time, gpointer pointer);
+//gboolean gtk_timeline_motion_notify(GtkWidget *timeline, GdkEventMotion *event, gpointer data);
+gboolean gtk_timeline_mouse_button_press (GtkWidget *timeline, GdkEvent *event, gpointer user_data);
+gboolean gtk_timeline_slide_button_press_event (GtkWidget *button, GdkEventButton *event, ImgTimeline *da);
+gboolean gtk_timeline_slide_button_release_event (GtkWidget *button, GdkEventButton *event, ImgTimeline *da);
 gboolean gtk_timeline_slide_motion(GtkWidget *widget, GdkEventCrossing *event, ImgTimeline *da);
 GtkWidget *gtk_timeline_private_get_slide_selected(ImgTimeline *da);
 
