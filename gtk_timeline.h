@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 Giuseppe Torelli <colossus73@gmail.com>
+ *  Copyright (c) 2021-2024 Giuseppe Torelli <colossus73@gmail.com>
  *   *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,12 +24,6 @@
 
 G_BEGIN_DECLS
 
-/**
- * ImgTimeline:
- *
- * A timeline video/audio widget for use with Imagination.
- *
- */
 struct _ImgTimeline
 {
   /*< private >*/
@@ -38,39 +32,51 @@ struct _ImgTimeline
 
 enum
 {
-  PROP_0,
-  //color properties
-  VIDEO_BACKGROUND,
-  AUDIO_BACKGROUND,
-  TOTAL_TIME,
-  TIME_MARKER_POS
+	PROP_0,
+	VIDEO_BACKGROUND,
+	AUDIO_BACKGROUND,
+	TOTAL_TIME,
+	TIME_MARKER_POS,
+	N_PROPERTIES
+};
+
+enum
+{
+    SIGNAL_TIME_CHANGED,
+    N_SIGNALS
 };
 
 #define GTK_TIMELINE_TYPE gtk_timeline_get_type()
-
 G_DECLARE_FINAL_TYPE(ImgTimeline, gtk_timeline, GTK, TIMELINE, GtkLayout)
+
+#define TIMELINE_TYPE_HANDLE (timeline_handle_get_type())
+#define TIMELINE_HANDLE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), TIMELINE_TYPE_HANDLE, TimelineHandle))
+#define TIMELINE_IS_HANDLE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), TIMELINE_TYPE_HANDLE))
+#define TIMELINE_HANDLE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), TIMELINE_TYPE_HANDLE, TimelineHandleClass))
+#define TIMELINE_IS_HANDLE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), TIMELINE_TYPE_HANDLE))
+#define TIMELINE_HANDLE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), TIMELINE_TYPE_HANDLE, TimelineHandleClass))
 
 //Public functions.
 GtkWidget* gtk_timeline_new();
 
 //Set and get colors.
-void gtk_timeline_set_video_background	(ImgTimeline *da, const gchar *background_string);
-void gtk_timeline_set_audio_background	(ImgTimeline *da, const gchar *background_string);
-void gtk_timeline_adjust_zoom			(GtkWidget *da, gint zoom, gint direction);
-void img_timeline_adjust_marker_posx	(GtkWidget *da, gint posx);
-void gtk_timeline_set_total_time		(ImgTimeline *da, gint total_time);
-void gtk_timeline_add_slide				(GtkWidget *da, gchar *filename, gint posx);
-void gtk_timeline_draw_time_marker(GtkWidget *widget, cairo_t *cr, gint pos_X);
-void gtk_timeline_set_time_marker(ImgTimeline *widget, gint pos_X);
+void gtk_timeline_set_video_background	(ImgTimeline *, const gchar *);
+void gtk_timeline_set_audio_background	(ImgTimeline *, const gchar *);
+void gtk_timeline_adjust_zoom					(GtkWidget *, gint , gint );
+void gtk_timeline_adjust_marker_posx		(GtkWidget *, gint );
+void gtk_timeline_set_total_time					(ImgTimeline *, gint );
+void gtk_timeline_add_media						(GtkWidget *, gchar *filename, gint );
+void gtk_timeline_draw_time_marker			(GtkWidget *, cairo_t *, gint );
+void gtk_timeline_set_time_marker				(ImgTimeline *, gint );
 
 gboolean gtk_timeline_scroll( GtkWidget *widget, GdkEventScroll *event, GtkWidget * );
-void gtk_timeline_drag_data_received (GtkWidget *timeline, GdkDragContext *context, gint x, gint y, GtkSelectionData *data, guint info, guint time, gpointer pointer);
-//gboolean gtk_timeline_motion_notify(GtkWidget *timeline, GdkEventMotion *event, gpointer data);
-gboolean gtk_timeline_mouse_button_press (GtkWidget *timeline, GdkEvent *event, gpointer user_data);
-gboolean gtk_timeline_slide_button_press_event (GtkWidget *button, GdkEventButton *event, ImgTimeline *da);
-gboolean gtk_timeline_slide_button_release_event (GtkWidget *button, GdkEventButton *event, ImgTimeline *da);
-gboolean gtk_timeline_slide_motion(GtkWidget *widget, GdkEventCrossing *event, ImgTimeline *da);
-GtkWidget *gtk_timeline_private_get_slide_selected(ImgTimeline *da);
+void gtk_timeline_drag_data_received (GtkWidget *, GdkDragContext *, gint , gint , GtkSelectionData *, guint , guint , gpointer );
+gboolean gtk_timeline_motion_notify(GtkWidget *, GdkEventMotion *event, ImgTimeline *);
+gboolean gtk_timeline_mouse_button_press (GtkWidget *, GdkEvent *event, ImgTimeline *);
+gboolean gtk_timeline_slide_button_press_event (GtkWidget *, GdkEventButton *event, ImgTimeline *);
+gboolean gtk_timeline_slide_button_release_event (GtkWidget *, GdkEventButton *event, ImgTimeline *);
+gboolean gtk_timeline_slide_motion(GtkWidget *, GdkEventCrossing *, ImgTimeline *);
+GtkWidget *gtk_timeline_private_get_slide_selected(ImgTimeline *);
 
 G_END_DECLS
 
